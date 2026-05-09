@@ -9,8 +9,12 @@ import razorpay
 
 razorpay_client = razorpay.Client(auth=(os.environ.get("RAZORPAY_KEY_ID", "rzp_test_dummy"), os.environ.get("RAZORPAY_KEY_SECRET", "dummy_secret")))
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="../frontend", static_url_path="")
 CORS(app)
+
+@app.route("/")
+def index():
+    return app.send_static_file("index.html")
 
 SECRET_KEY = "VELORA_SECRET"
 

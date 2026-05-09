@@ -1,5 +1,5 @@
 const appContainer = document.getElementById('app-container');
-const API_URL = 'http://127.0.0.1:5000/api';
+const API_URL = '/api';
 let leafletMap = null;
 let markers = [];
 let currentUser = null;
