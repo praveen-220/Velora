@@ -169,12 +169,13 @@ async function initProfile() {
 // --- Views Content ---
 const views = {
     home: `
-        <div class="hero-wrapper">
-            <div class="hero-overlay"></div>
+        <div class="hero-wrapper" style="background-image: url('premium_car_background_1778320751854.png');">
+            <div class="hero-overlay" style="background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.4) 60%, rgba(255,255,255,0) 100%);"></div>
             <div class="hero-content">
                 <div class="hero-text-block animate-up">
-                    <h1>Go anywhere.<br>With Velora.</h1>
-                    <p>Reliable carpooling for your daily travels or long trips. Premium experience, verified drivers.</p>
+                    <span class="badge fare-prime" style="margin-bottom:1rem; display:inline-block;">NEW: Inter-city Travel</span>
+                    <h1>Your premium journey<br>starts here.</h1>
+                    <p>Experience the most reliable and comfortable carpooling service. Verified drivers, transparent pricing, and unparalleled safety.</p>
                     
                     <div class="booking-widget">
                         <div class="widget-tabs">
@@ -200,6 +201,40 @@ const views = {
                 </div>
             </div>
         </div>
+
+        <section class="info-section animate-up" style="padding:5rem 2rem; background:var(--bg-main); text-align:center;">
+            <h2 style="font-size:2.5rem; margin-bottom:1rem;">Ride with confidence</h2>
+            <p style="color:var(--text-muted); max-width:700px; margin:0 auto 4rem;">We prioritize your safety and comfort at every step of the journey.</p>
+            
+            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:3rem; max-width:1200px; margin:0 auto;">
+                <div class="info-card">
+                    <span class="material-symbols-outlined" style="font-size:3rem; color:var(--accent); margin-bottom:1.5rem;">verified_user</span>
+                    <h3>Verified Drivers</h3>
+                    <p style="font-size:0.95rem; margin-top:1rem;">Every driver on Velora undergoes a multi-step background and ID verification process.</p>
+                </div>
+                <div class="info-card">
+                    <span class="material-symbols-outlined" style="font-size:3rem; color:var(--accent); margin-bottom:1.5rem;">payments</span>
+                    <h3>Fair Pricing</h3>
+                    <p style="font-size:0.95rem; margin-top:1rem;">Enjoy predictable, transparent pricing with no hidden fees or surprise surges.</p>
+                </div>
+                <div class="info-card">
+                    <span class="material-symbols-outlined" style="font-size:3rem; color:var(--accent); margin-bottom:1.5rem;">eco</span>
+                    <h3>Eco Friendly</h3>
+                    <p style="font-size:0.95rem; margin-top:1rem;">Carpooling reduces carbon emissions and helps save the planet, one ride at a time.</p>
+                </div>
+            </div>
+        </section>
+
+        <section style="padding:5rem 2rem; background:var(--bg-light); text-align:center;">
+            <div style="max-width:1000px; margin:0 auto; background:var(--primary-gradient); padding:4rem; border-radius:40px; color:#fff;">
+                <h2 style="color:#fff; font-size:2.5rem; margin-bottom:1rem;">Ready to hit the road?</h2>
+                <p style="color:rgba(255,255,255,0.9); margin-bottom:2.5rem;">Join thousands of travelers who trust Velora for their daily commute.</p>
+                <div style="display:flex; justify-content:center; gap:1.5rem;">
+                    <button class="btn-primary" style="background:#fff; color:var(--accent);" onclick="navigateTo('login')">Get Started Now</button>
+                    <button class="btn-primary-outline" style="border-color:#fff; color:#fff;" onclick="navigateTo('offer')">Publish a Ride</button>
+                </div>
+            </div>
+        </section>
     `,
         <div class="view-section" style="max-width:800px; margin:0 auto; padding-top:120px;">
             <h2 style="margin-bottom:2rem;">Search Results</h2>

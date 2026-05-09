@@ -360,3 +360,59 @@ h1, h2, h3, h4 {
 .animate-up {
     animation: slideUp 0.6s ease forwards;
 }
+
+/* Additional Premium Components */
+.info-card {
+    background: var(--bg-main);
+    padding: 3rem 2rem;
+    border-radius: 32px;
+    border: 1px solid var(--glass-border);
+    transition: var(--transition);
+    text-align: center;
+}
+
+.info-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-premium);
+    border-color: var(--accent);
+}
+
+.info-card h3 {
+    margin-top: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.btn-primary-outline {
+    background: transparent;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-primary-outline:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.fare-prime {
+    background: rgba(242, 153, 74, 0.1);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+}
