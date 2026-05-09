@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 load_dotenv("env.txt")
 load_dotenv("backend/env.txt")
 
-razorpay_client = razorpay.Client(auth=(os.environ.get("RAZORPAY_KEY_ID", "rzp_test_dummy"), os.environ.get("RAZORPAY_KEY_SECRET", "dummy_secret")))
+# razorpay_client = razorpay.Client(auth=(os.environ.get("RAZORPAY_KEY_ID", "rzp_test_dummy"), os.environ.get("RAZORPAY_KEY_SECRET", "dummy_secret")))
 
 app = Flask(__name__, static_folder="../frontend", static_url_path="")
 CORS(app)
@@ -29,7 +29,7 @@ def get_db():
 def init_db():
     db = get_db()
     db.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE, phone TEXT UNIQUE, password TEXT, otp TEXT, aadhaar_no TEXT, role TEXT DEFAULT 'user', is_driver_verified INTEGER DEFAULT 0, is_banned INTEGER DEFAULT 0, driver_rating_sum REAL DEFAULT 0, driver_rating_count INTEGER DEFAULT 0, user_rating_sum REAL DEFAULT 0, user_rating_count INTEGER DEFAULT 0, avatar TEXT)")
-    db.execute("CREATE TABLE IF NOT EXISTS rides (id INTEGER PRIMARY KEY, driver_id INTEGER, car_name TEXT, car_year INTEGER, from_loc TEXT, to_loc TEXT, start_lat REAL, start_lng REAL, end_lat REAL, end_lng REAL, price REAL, seats INTEGER, total_seats INTEGER, ride_date TEXT, departure TEXT, ride_type TEXT DEFAULT 'Go', status TEXT DEFAULT 'pending', FOREIGN KEY(driver_id) REFERENCES users(id))")
+    db.execute("CREATE TABLE IF NOT EXISTS rides (id INTEGER PRIMARY KEY, driver_id INTEGER, car_name TEXT, car_year INTEGER, from_loc TEXT, to_loc TEXT, start_lat REAL, start_lng REAL, end_lat REAL, end_lng REAL, live_lat REAL, live_lng REAL, price REAL, seats INTEGER, total_seats INTEGER, ride_date TEXT, departure TEXT, ride_type TEXT DEFAULT 'Go', status TEXT DEFAULT 'pending', FOREIGN KEY(driver_id) REFERENCES users(id))")
     db.execute("CREATE TABLE IF NOT EXISTS bookings (id INTEGER PRIMARY KEY, ride_id INTEGER, user_id INTEGER, seats_booked INTEGER, status TEXT DEFAULT 'confirmed', FOREIGN KEY(ride_id) REFERENCES rides(id), FOREIGN KEY(user_id) REFERENCES users(id))")
     db.execute("CREATE TABLE IF NOT EXISTS cars (id INTEGER PRIMARY KEY, model TEXT UNIQUE)")
     if db.execute("SELECT COUNT(*) FROM cars").fetchone()[0] == 0:
@@ -93,8 +93,8 @@ def manage_rides():
     db = get_db()
     if request.method == "POST":
         data = request.json
-        db.execute("INSERT INTO rides (driver_id, car_name, car_year, from_loc, to_loc, start_lat, start_lng, end_lat, end_lng, price, seats, total_seats, ride_date, departure, ride_type) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                  (data["driver_id"], data["car_name"], data["car_year"], data["from_loc"], data["to_loc"], data["start_lat"], data["start_lng"], data["end_lat"], data["end_lng"], data["price"], data["seats"], data["seats"], data["ride_date"], data["departure"], data["ride_type"]))
+        db.execute("INSERT INTO rides (driver_id, car_name, car_year, from_loc, to_loc, start_lat, start_lng, end_lat, end_lng, live_lat, live_lng, price, seats, total_seats, ride_date, departure, ride_type) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                  (data["driver_id"], data["car_name"], data["car_year"], data["from_loc"], data["to_loc"], data["start_lat"], data["start_lng"], data["end_lat"], data["end_lng"], data["start_lat"], data["start_lng"], data["price"], data["seats"], data["seats"], data["ride_date"], data["departure"], data["ride_type"]))
         db.commit()
         return {"success": True}
     else:
