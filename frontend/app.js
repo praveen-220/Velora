@@ -1,5 +1,5 @@
 const appContainer = document.getElementById('app-container');
-const API_URL = '/api';
+const API_URL = window.location.protocol === 'file:' ? 'http://127.0.0.1:5000/api' : '/api';
 let leafletMap = null;
 let currentUser = null;
 
