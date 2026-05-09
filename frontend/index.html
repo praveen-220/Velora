@@ -3,36 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veora | Your Ride, Your Journey</title>
+    <title>Velora | Premium Ride-Sharing Network</title>
     
-    <!-- Fonts: Outfit for Headings, Inter for Body -->
+    <!-- Premium Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
     
     <!-- Icons & Maps -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <nav class="veora-nav">
+    <nav class="velora-nav">
         <div class="nav-container">
-            <a href="#" class="brand-logo" onclick="navigateTo('home')">VEORA</a>
+            <a href="#" class="brand-logo" onclick="navigateTo('home')">VELORA</a>
             <div class="nav-links">
-                <a href="#" class="nav-item" onclick="navigateTo('home')">Home</a>
-                <a href="#" class="nav-item" onclick="navigateTo('rider')">Rider Dashboard</a>
-                <a href="#" class="nav-item" onclick="navigateTo('driver')">Driver Hub</a>
-                <button class="btn-veora" id="nav-auth-btn" onclick="navigateTo('login')">Sign In</button>
+                <a href="#" class="nav-link" onclick="navigateTo('home')">Explore</a>
+                <a href="#" class="nav-link" onclick="navigateTo('rider')">Rider Hub</a>
+                <a href="#" class="nav-link" onclick="navigateTo('driver')">Driver Portal</a>
+                <button class="btn-premium" id="nav-auth-btn" onclick="navigateTo('login')">Access Network</button>
             </div>
         </div>
     </nav>
 
     <main id="app-container">
-        <!-- SPA Dynamic Content -->
+        <!-- SPA Core -->
     </main>
+
+    <!-- Chat Overlay (Live Simulation) -->
+    <div id="chat-overlay" class="chat-hidden">
+        <div class="chat-header">
+            <span>Live Chat</span>
+            <button onclick="toggleChat()">×</button>
+        </div>
+        <div id="chat-messages"></div>
+        <div class="chat-input">
+            <input type="text" id="chat-msg" placeholder="Type a message...">
+            <button onclick="sendChatMessage()">Send</button>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>
