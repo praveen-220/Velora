@@ -3,81 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Velora | Premium Ride-Sharing</title>
-    <meta name="description" content="Experience the future of mobility with Velora. Book rides, find carpools, and travel with style.">
+    <title>Velora | Professional Ride-Sharing</title>
     
-    <!-- Fonts: Inter & Outfit -->
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
     
-    <!-- Icons (Google Material Symbols) -->
+    <!-- Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
-
-    <!-- Leaflet.js Map Library -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    
-    <!-- Chart.js for Advanced Analytics -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Razorpay Checkout -->
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Navbar -->
-    <nav id="navbar" class="glass-nav">
+    <nav class="glass-nav">
         <div class="nav-container">
             <a href="#" class="brand-logo" onclick="navigateTo('home')">
-                <img src="logo.png" alt="Velora Logo" class="nav-logo-img">
+                <img src="logo.png" alt="Velora" class="nav-logo-img">
             </a>
             <div class="nav-links">
-                <a href="#" onclick="navigateTo('home')" class="nav-item">Search</a>
-                <a href="#" onclick="navigateTo('offer')" class="nav-item">Publish a ride</a>
-                <div class="theme-switch" onclick="toggleDarkMode()">
-                    <span class="material-symbols-outlined" id="theme-icon">dark_mode</span>
-                </div>
+                <a href="#" onclick="navigateTo('home')" class="nav-item">
+                    <span class="material-symbols-outlined">search</span> Search
+                </a>
+                <a href="#" onclick="navigateTo('offer')" class="nav-item">
+                    <span class="material-symbols-outlined">add_circle</span> Publish a ride
+                </a>
                 <button class="btn-primary" id="nav-auth-btn" onclick="navigateTo('login')">Sign In</button>
             </div>
-            <!-- Mobile Menu Toggle -->
-            <button class="mobile-toggle" onclick="toggleMobileMenu()">
-                <span class="material-symbols-outlined">menu</span>
-            </button>
         </div>
     </nav>
 
-    <!-- App Container for Single Page App routing -->
     <main id="app-container">
-        <!-- Content will be injected here by app.js -->
+        <!-- SPA Content -->
     </main>
-
-    <!-- Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-brand">
-                <h2>Velora</h2>
-                <p>Redefining mobility for the modern world.</p>
-            </div>
-            <div class="footer-links">
-                <h3>Company</h3>
-                <a href="#">About Us</a>
-                <a href="#">Careers</a>
-                <a href="#">Safety</a>
-            </div>
-            <div class="footer-links">
-                <h3>Support</h3>
-                <a href="#">Help Center</a>
-                <a href="#" onclick="navigateTo('devLogin')">Developer Portal</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Privacy Policy</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Velora Technologies Inc. All rights reserved.</p>
-        </div>
-    </footer>
 
     <script src="app.js"></script>
 </body>

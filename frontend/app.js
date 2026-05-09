@@ -169,72 +169,80 @@ async function initProfile() {
 // --- Views Content ---
 const views = {
     home: `
-        <div class="hero-wrapper" style="background-image: url('premium_car_background_1778320751854.png');">
-            <div class="hero-overlay" style="background: linear-gradient(90deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.4) 60%, rgba(255,255,255,0) 100%);"></div>
+        <div class="hero-wrapper">
+            <div class="hero-overlay"></div>
             <div class="hero-content">
-                <div class="hero-text-block animate-up">
-                    <span class="badge fare-prime" style="margin-bottom:1rem; display:inline-block;">NEW: Inter-city Travel</span>
-                    <h1>Your premium journey<br>starts here.</h1>
-                    <p>Experience the most reliable and comfortable carpooling service. Verified drivers, transparent pricing, and unparalleled safety.</p>
-                    
-                    <div class="booking-widget">
-                        <div class="widget-tabs">
-                            <button class="tab active">Find a Ride</button>
-                            <button class="tab" onclick="navigateTo('offer')">Offer a Ride</button>
-                        </div>
-                        <div class="input-container">
-                            <span class="material-symbols-outlined">radio_button_checked</span>
-                            <input type="text" id="s-from" placeholder="Leaving from...">
-                        </div>
-                        <div class="input-container">
-                            <span class="material-symbols-outlined">location_on</span>
-                            <input type="text" id="s-to" placeholder="Going to...">
-                        </div>
-                        <div class="input-container">
-                            <span class="material-symbols-outlined">calendar_today</span>
-                            <input type="date" id="s-date">
-                        </div>
-                        <button class="btn-primary" style="width:100%; margin-top:1rem;" onclick="navigateTo('search', {from:document.getElementById('s-from').value, to:document.getElementById('s-to').value, date:document.getElementById('s-date').value})">
-                            Search Rides
-                        </button>
+                <h1>Your pick of rides at low prices</h1>
+                <div class="search-pill">
+                    <div class="search-field">
+                        <span class="material-symbols-outlined" style="color:var(--text-muted)">radio_button_checked</span>
+                        <input type="text" id="s-from" placeholder="Leaving from...">
                     </div>
+                    <div class="search-field">
+                        <span class="material-symbols-outlined" style="color:var(--text-muted)">location_on</span>
+                        <input type="text" id="s-to" placeholder="Going to...">
+                    </div>
+                    <div class="search-field">
+                        <span class="material-symbols-outlined" style="color:var(--text-muted)">calendar_today</span>
+                        <input type="date" id="s-date">
+                    </div>
+                    <button class="search-btn" onclick="navigateTo('search', {from:document.getElementById('s-from').value, to:document.getElementById('s-to').value, date:document.getElementById('s-date').value})">Search</button>
                 </div>
             </div>
         </div>
 
-        <section class="info-section animate-up" style="padding:5rem 2rem; background:var(--bg-main); text-align:center;">
-            <h2 style="font-size:2.5rem; margin-bottom:1rem;">Ride with confidence</h2>
-            <p style="color:var(--text-muted); max-width:700px; margin:0 auto 4rem;">We prioritize your safety and comfort at every step of the journey.</p>
-            
-            <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:3rem; max-width:1200px; margin:0 auto;">
-                <div class="info-card">
-                    <span class="material-symbols-outlined" style="font-size:3rem; color:var(--accent); margin-bottom:1.5rem;">verified_user</span>
-                    <h3>Verified Drivers</h3>
-                    <p style="font-size:0.95rem; margin-top:1rem;">Every driver on Velora undergoes a multi-step background and ID verification process.</p>
+        <section class="info-section">
+            <div class="features-grid">
+                <div class="feature-item">
+                    <span class="material-symbols-outlined" style="font-size:3rem; color:var(--primary); margin-bottom:1rem;">payments</span>
+                    <h3>Your pick of rides at low prices</h3>
+                    <p style="color:var(--text-muted); font-size:0.9rem;">No matter where you’re going, by bus or carpool, find the perfect ride from our wide range of destinations and routes at low prices.</p>
                 </div>
-                <div class="info-card">
-                    <span class="material-symbols-outlined" style="font-size:3rem; color:var(--accent); margin-bottom:1.5rem;">payments</span>
-                    <h3>Fair Pricing</h3>
-                    <p style="font-size:0.95rem; margin-top:1rem;">Enjoy predictable, transparent pricing with no hidden fees or surprise surges.</p>
+                <div class="feature-item">
+                    <span class="material-symbols-outlined" style="font-size:3rem; color:var(--primary); margin-bottom:1rem;">verified_user</span>
+                    <h3>Trust who you travel with</h3>
+                    <p style="color:var(--text-muted); font-size:0.9rem;">We take the time to get to know each of our members and bus partners. We check reviews, profiles and IDs, so you know who you’re travelling with.</p>
                 </div>
-                <div class="info-card">
-                    <span class="material-symbols-outlined" style="font-size:3rem; color:var(--accent); margin-bottom:1.5rem;">eco</span>
-                    <h3>Eco Friendly</h3>
-                    <p style="font-size:0.95rem; margin-top:1rem;">Carpooling reduces carbon emissions and helps save the planet, one ride at a time.</p>
+                <div class="feature-item">
+                    <span class="material-symbols-outlined" style="font-size:3rem; color:var(--primary); margin-bottom:1rem;">flash_on</span>
+                    <h3>Scroll, click, tap and go!</h3>
+                    <p style="color:var(--text-muted); font-size:0.9rem;">Booking a ride has never been easier! Thanks to our simple app powered by great technology, you can book a ride close to you in just minutes.</p>
                 </div>
             </div>
         </section>
 
-        <section style="padding:5rem 2rem; background:var(--bg-light); text-align:center;">
-            <div style="max-width:1000px; margin:0 auto; background:var(--primary-gradient); padding:4rem; border-radius:40px; color:#fff;">
-                <h2 style="color:#fff; font-size:2.5rem; margin-bottom:1rem;">Ready to hit the road?</h2>
-                <p style="color:rgba(255,255,255,0.9); margin-bottom:2.5rem;">Join thousands of travelers who trust Velora for their daily commute.</p>
-                <div style="display:flex; justify-content:center; gap:1.5rem;">
-                    <button class="btn-primary" style="background:#fff; color:var(--accent);" onclick="navigateTo('login')">Get Started Now</button>
-                    <button class="btn-primary-outline" style="border-color:#fff; color:#fff;" onclick="navigateTo('offer')">Publish a Ride</button>
-                </div>
+        <section style="background:var(--primary); color:#fff; padding:5rem 2rem; text-align:center;">
+            <div style="max-width:800px; margin:0 auto;">
+                <h2 style="font-size:2.5rem; margin-bottom:1.5rem;">Driving in your car soon?</h2>
+                <p style="margin-bottom:2.5rem; font-size:1.1rem; opacity:0.9;">Good for your pocket, and even better for the planet. Share your ride and start saving on travel costs.</p>
+                <button class="btn-primary" style="background:#fff; color:var(--primary); padding:1rem 3rem; font-size:1.1rem;" onclick="navigateTo('offer')">Offer a ride</button>
             </div>
         </section>
+
+        <footer style="padding:4rem 2rem; border-top:1px solid var(--border); margin-top:5rem;">
+            <div style="max-width:1200px; margin:0 auto; display:grid; grid-template-columns:repeat(4, 1fr); gap:2rem;">
+                <div>
+                    <h4 style="margin-bottom:1.5rem;">Using Velora</h4>
+                    <p style="font-size:0.9rem; color:var(--text-muted);">How it works<br>Safety<br>Help Centre</p>
+                </div>
+                <div>
+                    <h4 style="margin-bottom:1.5rem;">Our Company</h4>
+                    <p style="font-size:0.9rem; color:var(--text-muted);">About Us<br>Careers<br>Media</p>
+                </div>
+                <div>
+                    <h4 style="margin-bottom:1.5rem;">Legal</h4>
+                    <p style="font-size:0.9rem; color:var(--text-muted);">Terms & Conditions<br>Privacy Policy<br>Cookie Policy</p>
+                </div>
+                <div>
+                    <h4 style="margin-bottom:1.5rem;">Social</h4>
+                    <div style="display:flex; gap:1rem;">
+                        <span class="material-symbols-outlined">facebook</span>
+                        <span class="material-symbols-outlined">camera</span>
+                        <span class="material-symbols-outlined">play_circle</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
     `,
         <div class="view-section" style="max-width:800px; margin:0 auto; padding-top:120px;">
             <h2 style="margin-bottom:2rem;">Search Results</h2>
