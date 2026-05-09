@@ -1,11 +1,7 @@
 const appContainer = document.getElementById('app-container');
 const API_URL = '/api';
 let leafletMap = null;
-let markers = [];
 let currentUser = null;
-let offerCarPhoto = "";
-let suggestTimeout = null;
-let activeTrackingInterval = null;
 
 // --- Helpers ---
 async function fetchAPI(endpoint, options = {}) {
@@ -18,7 +14,6 @@ async function fetchAPI(endpoint, options = {}) {
         if (!res.ok) throw new Error(data.error || 'API Error');
         return data;
     } catch (e) {
-        console.error(e);
         showToast(e.message, 'error');
         throw e;
     }
@@ -35,38 +30,27 @@ function showToast(msg, type = 'info') {
 // --- Navigation ---
 function navigateTo(route, params = {}) {
     if ((route === 'profile' || route === 'offer') && !currentUser) {
-        route = 'login';
-        showToast('Please sign in to continue');
+        navigateTo('login');
+        showToast('Please sign in first');
+        return;
     }
     
-    // Clear intervals
-    if (activeTrackingInterval) {
-        clearInterval(activeTrackingInterval);
-        activeTrackingInterval = null;
-    }
-
-    if (leafletMap) {
-        leafletMap.remove();
-        leafletMap = null;
-    }
-
+    if (leafletMap) { leafletMap.remove(); leafletMap = null; }
     appContainer.innerHTML = views[route] || views.home;
     
-    // Initialize specific view logic
-    if (route === 'search') initSearch();
+    if (route === 'home') initHome();
+    if (route === 'search') initSearch(params);
     if (route === 'offer') initOffer();
-    if (route === 'tracking') initTracking(params.ride);
     if (route === 'profile') initProfile();
-    if (route === 'devDashboard') initDevDashboard();
     
     window.scrollTo(0, 0);
-    updateNavAuth();
+    updateNav();
 }
 
-function updateNavAuth() {
+function updateNav() {
     const btn = document.getElementById('nav-auth-btn');
     if (currentUser) {
-        btn.innerText = currentUser.name.split(' ')[0];
+        btn.innerText = 'My Dashboard';
         btn.onclick = () => navigateTo('profile');
     } else {
         btn.innerText = 'Sign In';
@@ -75,267 +59,225 @@ function updateNavAuth() {
 }
 
 // --- Views Logic ---
-async function initSearch() {
-    const mapEl = document.getElementById('leaflet-map');
-    leafletMap = L.map(mapEl).setView([28.6139, 77.2090], 12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(leafletMap);
-    
-    const rides = await fetchAPI('/rides');
-    renderRidesList(rides);
+function initHome() {
+    // Basic home logic
 }
 
-function renderRidesList(rides) {
+async function initSearch(params = {}) {
     const list = document.getElementById('rides-list');
-    list.innerHTML = `<h3>Available Rides (${rides.length})</h3>`;
+    const query = new URLSearchParams(params).toString();
+    const rides = await fetchAPI(`/rides?${query}`);
+    
+    list.innerHTML = rides.length ? '' : '<p style="text-align:center; padding:2rem; color:var(--text-muted);">No rides found for your search. Try different cities or dates.</p>';
     
     rides.forEach(ride => {
         const card = document.createElement('div');
         card.className = 'ride-card animate-up';
         card.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-                <b style="font-size:1.2rem;">${ride.from_loc} → ${ride.to_loc}</b>
-                <span class="badge fare-${ride.ride_type.toLowerCase()}">${ride.ride_type}</span>
+            <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+                <div style="flex:1;">
+                    <b style="font-size:1.2rem;">${ride.from_loc}</b>
+                    <p style="font-size:0.8rem; color:var(--text-muted);">${ride.departure}</p>
+                </div>
+                <div style="text-align:center; padding:0 1rem; color:var(--accent);">→</div>
+                <div style="flex:1; text-align:right;">
+                    <b style="font-size:1.2rem;">${ride.to_loc}</b>
+                    <p style="font-size:0.8rem; color:var(--text-muted);">${ride.ride_date}</p>
+                </div>
             </div>
-            <div style="display:flex; gap:1rem; align-items:center;">
-                <img src="${ride.driver_avatar || 'https://i.pravatar.cc/100?u=' + ride.driver_id}" style="width:40px; height:40px; border-radius:50%;">
+            <div style="display:flex; align-items:center; border-top:1px solid var(--glass-border); padding-top:1rem;">
+                <img src="${ride.driver_avatar || 'https://i.pravatar.cc/100?u='+ride.driver_id}" style="width:40px; height:40px; border-radius:50%; margin-right:1rem;">
                 <div>
                     <b>${ride.driver_name}</b>
                     <p style="font-size:0.8rem; color:var(--text-muted);">${ride.car_name} • ${ride.seats} seats left</p>
                 </div>
                 <div style="margin-left:auto; text-align:right;">
-                    <b style="font-size:1.3rem; color:var(--accent);">₹${ride.price}</b>
+                    <b style="font-size:1.4rem; color:var(--accent);">₹${ride.price}</b>
                 </div>
             </div>
         `;
-        card.onclick = () => startBookingFlow(ride);
+        card.onclick = () => confirmBooking(ride);
         list.appendChild(card);
-        
-        // Add marker
-        const marker = L.marker([ride.start_lat, ride.start_lng]).addTo(leafletMap);
-        marker.bindPopup(`<b>${ride.driver_name}</b><br>${ride.car_name}`);
     });
 }
 
-function startBookingFlow(ride) {
-    const confirm = window.confirm(`Book a ride with ${ride.driver_name} for ₹${ride.price}?`);
-    if (confirm) {
-        // Mock payment
-        showToast('Processing Payment...');
-        setTimeout(() => {
-            showToast('Booking Successful!', 'success');
-            navigateTo('tracking', { ride });
-        }, 1500);
-    }
+async function confirmBooking(ride) {
+    if (!currentUser) { navigateTo('login'); return; }
+    const seats = prompt(`How many seats for ₹${ride.price} each? (Max ${ride.seats})`, "1");
+    if (!seats || isNaN(seats) || seats > ride.seats) return;
+    
+    try {
+        await fetchAPI('/rides/book', {
+            method: 'POST',
+            body: JSON.stringify({ ride_id: ride.id, user_id: currentUser.id, seats_booked: parseInt(seats) })
+        });
+        showToast('Booking Confirmed!', 'success');
+        navigateTo('profile');
+    } catch (e) {}
 }
 
-function initTracking(ride) {
-    if (!ride) { navigateTo('search'); return; }
+async function initOffer() {
+    const carSelect = document.getElementById('offer-car');
+    const cars = await fetchAPI('/cars');
+    carSelect.innerHTML = cars.map(c => `<option value="${c.model}">${c.model}</option>`).join('');
+}
+
+async function handlePublishRide(e) {
+    e.preventDefault();
+    const data = {
+        driver_id: currentUser.id,
+        from_loc: document.getElementById('off-from').value,
+        to_loc: document.getElementById('off-to').value,
+        ride_date: document.getElementById('off-date').value,
+        departure: document.getElementById('off-time').value,
+        car_name: document.getElementById('offer-car').value,
+        car_year: 2024,
+        price: parseFloat(document.getElementById('off-price').value),
+        seats: parseInt(document.getElementById('off-seats').value),
+        ride_type: 'Go',
+        start_lat: 0, start_lng: 0, end_lat: 0, end_lng: 0 // Mocked coords for now
+    };
     
-    const mapEl = document.getElementById('leaflet-map');
-    leafletMap = L.map(mapEl).setView([ride.start_lat, ride.start_lng], 14);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(leafletMap);
+    await fetchAPI('/rides', { method: 'POST', body: JSON.stringify(data) });
+    showToast('Ride Published!', 'success');
+    navigateTo('home');
+}
 
-    const carIcon = L.divIcon({
-        className: 'live-car-icon live-marker-pulse',
-        html: '<span class="material-symbols-outlined">directions_car</span>',
-        iconSize: [30, 30]
-    });
-
-    const carMarker = L.marker([ride.start_lat, ride.start_lng], { icon: carIcon }).addTo(leafletMap);
-    const destMarker = L.marker([ride.end_lat, ride.end_lng]).addTo(leafletMap);
+async function initProfile() {
+    const activity = await fetchAPI('/user/activity', { method: 'POST', body: JSON.stringify({ user_id: currentUser.id }) });
+    const offeredList = document.getElementById('offered-rides');
+    const bookedList = document.getElementById('booked-rides');
     
-    // Draw route
-    L.polyline([[ride.start_lat, ride.start_lng], [ride.end_lat, ride.end_lng]], { color: 'var(--accent)', weight: 4, dashArray: '10, 10' }).addTo(leafletMap);
-
-    // Update overlay
-    document.getElementById('track-status').innerText = 'Driver is en route';
-    document.getElementById('track-price').innerText = `₹${ride.price}`;
-    document.getElementById('track-driver-name').innerText = ride.driver_name;
-    document.getElementById('track-car-info').innerText = ride.car_name;
-
-    // Simulate movement
-    let step = 0;
-    const steps = 100;
-    activeTrackingInterval = setInterval(() => {
-        step++;
-        const lat = ride.start_lat + (ride.end_lat - ride.start_lat) * (step / steps);
-        const lng = ride.start_lng + (ride.end_lng - ride.start_lng) * (step / steps);
-        carMarker.setLatLng([lat, lng]);
-        leafletMap.panTo([lat, lng]);
-        
-        const eta = Math.ceil((steps - step) / 10);
-        document.getElementById('track-eta').innerText = eta > 0 ? `Arriving in ${eta} mins` : 'Arrived!';
-        
-        if (step >= steps) {
-            clearInterval(activeTrackingInterval);
-            showToast('You have arrived at your destination!', 'success');
-        }
-    }, 2000);
+    document.getElementById('prof-name').innerText = currentUser.name;
+    document.getElementById('prof-email').innerText = currentUser.email || currentUser.phone;
+    
+    offeredList.innerHTML = activity.offered.map(r => `
+        <div class="ride-card">
+            <b>${r.from_loc} → ${r.to_loc}</b>
+            <p>${r.ride_date} at ${r.departure} • ₹${r.price}</p>
+        </div>
+    `).join('') || '<p>You haven\'t offered any rides yet.</p>';
+    
+    bookedList.innerHTML = activity.booked.map(r => `
+        <div class="ride-card" style="border-left:4px solid var(--accent);">
+            <b>${r.from_loc} → ${r.to_loc}</b>
+            <p>${r.ride_date} • ${r.seats_booked} seats booked</p>
+        </div>
+    `).join('') || '<p>You haven\'t booked any rides yet.</p>';
 }
 
 // --- Views Content ---
 const views = {
     home: `
-        <div class="hero-wrapper">
-            <div class="hero-content">
-                <div class="hero-text-block animate-up">
-                    <h1>Go anywhere.<br>With Velora.</h1>
-                    <p>Premium ride-sharing with real-time tracking, verified drivers, and transparent pricing. Travel safe, travel together.</p>
-                    
-                    <div class="booking-widget">
-                        <div class="widget-tabs">
-                            <button class="tab active">Find a Ride</button>
-                            <button class="tab" onclick="navigateTo('offer')">Offer a Ride</button>
-                        </div>
-                        <div class="input-container">
-                            <span class="material-symbols-outlined">radio_button_checked</span>
-                            <input type="text" id="pickup" placeholder="Pickup location">
-                        </div>
-                        <div class="input-container">
-                            <span class="material-symbols-outlined">location_on</span>
-                            <input type="text" id="dropoff" placeholder="Drop-off location">
-                        </div>
-                        <button class="btn-primary" style="width:100%; margin-top:1rem;" onclick="navigateTo('search')">
-                            Search Rides <span class="material-symbols-outlined">arrow_forward</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="hero-image-block">
-                    <img src="logo.png" style="width:100%; opacity:0.1; position:absolute; filter:grayscale(1);">
-                    <div class="tracking-card animate-up">
-                        <div class="track-line">
-                            <div class="track-point">
-                                <small>Start</small><br><b>Central Park</b>
-                            </div>
-                            <div class="track-point">
-                                <small>End</small><br><b>Tech Hub</b>
-                            </div>
-                        </div>
-                        <div class="driver-mini">
-                            <img src="https://i.pravatar.cc/100?u=alex" class="driver-img">
-                            <div>
-                                <b>Alex Rivera</b><br>
-                                <small>Tesla Model S • 4.9⭐</small>
-                            </div>
-                        </div>
-                    </div>
+        <div class="hero-wrapper" style="background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), url('https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80'); background-size:cover;">
+            <div class="hero-content" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
+                <h1 class="animate-up">Your pick of rides at low prices</h1>
+                <p class="animate-up" style="margin-bottom:3rem;">Reliable carpooling for your daily travels or long trips.</p>
+                
+                <div class="booking-widget animate-up" style="max-width:900px; width:100%; display:grid; grid-template-columns: repeat(4, 1fr); gap:1rem; padding:1.5rem; border-radius:20px;">
+                    <div class="input-container" style="margin:0;"><input type="text" id="s-from" placeholder="Leaving from..."></div>
+                    <div class="input-container" style="margin:0;"><input type="text" id="s-to" placeholder="Going to..."></div>
+                    <div class="input-container" style="margin:0;"><input type="date" id="s-date"></div>
+                    <button class="btn-primary" onclick="navigateTo('search', {from:document.getElementById('s-from').value, to:document.getElementById('s-to').value, date:document.getElementById('s-date').value})">Search</button>
                 </div>
             </div>
         </div>
     `,
     search: `
-        <div class="map-container">
-            <div class="map-sidebar" id="rides-list">
-                <h3>Searching for rides...</h3>
+        <div class="view-section" style="max-width:800px; margin:0 auto; padding-top:120px;">
+            <h2 style="margin-bottom:2rem;">Search Results</h2>
+            <div id="rides-list"></div>
+        </div>
+    `,
+    offer: `
+        <div class="view-section" style="max-width:600px; margin:0 auto; padding-top:120px;">
+            <div class="form-card" style="margin:0; width:100%; max-width:100%;">
+                <h2>Offer a Ride</h2>
+                <form onsubmit="handlePublishRide(event)">
+                    <div class="form-group"><label>Leaving from</label><input type="text" id="off-from" required></div>
+                    <div class="form-group"><label>Going to</label><input type="text" id="off-to" required></div>
+                    <div class="form-group"><label>Date</label><input type="date" id="off-date" required></div>
+                    <div class="form-group"><label>Time</label><input type="time" id="off-time" required></div>
+                    <div class="form-group"><label>Car</label><select id="offer-car"></select></div>
+                    <div class="form-group"><label>Price per seat (₹)</label><input type="number" id="off-price" required></div>
+                    <div class="form-group"><label>Available Seats</label><input type="number" id="off-seats" value="3" required></div>
+                    <button type="submit" class="btn-primary" style="width:100%;">Publish Ride</button>
+                </form>
             </div>
-            <div id="leaflet-map"></div>
+        </div>
+    `,
+    profile: `
+        <div class="view-section" style="max-width:1000px; margin:0 auto; padding-top:120px;">
+            <div style="display:grid; grid-template-columns: 300px 1fr; gap:3rem;">
+                <div>
+                    <div class="form-card" style="margin:0; text-align:center; padding:2rem;">
+                        <div class="avatar" style="width:100px; height:100px; margin:0 auto 1.5rem; font-size:2.5rem;">👤</div>
+                        <h3 id="prof-name">User Name</h3>
+                        <p id="prof-email" style="font-size:0.9rem; color:var(--text-muted); margin-bottom:2rem;"></p>
+                        <button class="btn-primary-outline" onclick="logout()" style="width:100%;">Logout</button>
+                    </div>
+                </div>
+                <div>
+                    <h3 style="margin-bottom:1.5rem;">My Booked Rides</h3>
+                    <div id="booked-rides" style="margin-bottom:3rem;"></div>
+                    <h3 style="margin-bottom:1.5rem;">My Offered Rides</h3>
+                    <div id="offered-rides"></div>
+                </div>
+            </div>
         </div>
     `,
     login: `
-        <div class="view-section">
+        <div class="view-section" style="padding-top:120px;">
             <div class="form-card animate-up">
-                <h2 id="auth-title" style="margin-bottom:1rem;">Welcome Back</h2>
-                <p style="color:var(--text-muted); margin-bottom:2rem;">Sign in to access your Velora account</p>
+                <h2 id="auth-title">Welcome</h2>
                 <form onsubmit="handleAuth(event)">
-                    <div class="form-group" id="name-group" style="display:none;">
-                        <label>Full Name</label>
-                        <input type="text" id="auth-name" placeholder="John Doe">
-                    </div>
-                    <div class="form-group">
-                        <label>Email or Phone</label>
-                        <input type="text" id="auth-identifier" required placeholder="name@example.com">
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="password" id="auth-pass" required placeholder="••••••••">
-                    </div>
-                    <button type="submit" class="btn-primary" style="width:100%" id="auth-btn">Continue</button>
+                    <div class="form-group" id="name-group" style="display:none;"><label>Full Name</label><input type="text" id="auth-name"></div>
+                    <div class="form-group"><label>Email or Phone</label><input type="text" id="auth-identifier" required></div>
+                    <div class="form-group"><label>Password</label><input type="password" id="auth-pass" required></div>
+                    <button type="submit" class="btn-primary" style="width:100%;" id="auth-btn">Continue</button>
                 </form>
-                <p style="text-align:center; margin-top:1.5rem; font-size:0.9rem;">
-                    <a href="#" onclick="toggleAuthMode()" id="auth-toggle">New to Velora? Create account</a>
-                </p>
-            </div>
-        </div>
-    `,
-    tracking: `
-        <div class="map-container">
-            <button class="sos-btn" onclick="alert('Emergency Alert Sent!')">
-                <span class="material-symbols-outlined">sos</span> EMERGENCY
-            </button>
-            <div id="leaflet-map"></div>
-            <div class="tracking-overlay animate-up">
-                <div>
-                    <h3 id="track-status">Connecting...</h3>
-                    <p id="track-eta" style="color:var(--text-muted);">Calculating ETA...</p>
-                    <div style="display:flex; align-items:center; gap:1rem; margin-top:1rem;">
-                        <img id="track-driver-img" src="https://i.pravatar.cc/100?u=driver" style="width:50px; height:50px; border-radius:50%;">
-                        <div>
-                            <b id="track-driver-name">Driver</b><br>
-                            <span id="track-car-info" style="font-size:0.8rem;">Vehicle</span>
-                        </div>
-                    </div>
-                </div>
-                <div style="text-align:right;">
-                    <div id="track-price" style="font-size:2rem; font-weight:800; color:var(--accent);">₹--</div>
-                    <button class="btn-primary" style="padding:0.6rem 1rem; font-size:0.8rem; margin-top:0.5rem;" onclick="navigateTo('search')">Cancel Ride</button>
-                </div>
+                <p style="text-align:center; margin-top:1rem; font-size:0.9rem;"><a href="#" onclick="toggleAuthMode()" id="auth-toggle">Create account</a></p>
             </div>
         </div>
     `
 };
 
-// --- Auth Logic ---
+// --- Auth Utils ---
 function toggleAuthMode() {
-    const isLogin = document.getElementById('auth-title').innerText === 'Welcome Back';
-    document.getElementById('auth-title').innerText = isLogin ? 'Create Account' : 'Welcome Back';
-    document.getElementById('auth-toggle').innerText = isLogin ? 'Already have account? Sign In' : 'New to Velora? Create account';
+    const isLogin = document.getElementById('auth-title').innerText === 'Welcome';
+    document.getElementById('auth-title').innerText = isLogin ? 'Create Account' : 'Welcome';
     document.getElementById('name-group').style.display = isLogin ? 'block' : 'none';
+    document.getElementById('auth-toggle').innerText = isLogin ? 'Sign in instead' : 'Create account';
 }
 
 async function handleAuth(e) {
     e.preventDefault();
     const isReg = document.getElementById('auth-title').innerText === 'Create Account';
-    const identifier = document.getElementById('auth-identifier').value;
-    const password = document.getElementById('auth-pass').value;
-    const name = document.getElementById('auth-name')?.value;
-    
-    const endpoint = isReg ? '/auth/register' : '/auth/login';
-    const body = { identifier, password };
-    if (isReg) body.name = name;
-
-    try {
-        const res = await fetchAPI(endpoint, { method: 'POST', body: JSON.stringify(body) });
-        if (res.requires_otp) {
-            showOtpModal(res.identifier, res.otp_fallback);
+    const body = {
+        identifier: document.getElementById('auth-identifier').value,
+        password: document.getElementById('auth-pass').value,
+        name: document.getElementById('auth-name')?.value
+    };
+    const res = await fetchAPI(isReg ? '/auth/register' : '/auth/login', { method: 'POST', body: JSON.stringify(body) });
+    if (res.requires_otp) {
+        const otp = prompt(`Enter OTP (MOCK: ${res.otp_fallback})`);
+        if (otp) {
+            const final = await fetchAPI('/auth/verify-otp', { method: 'POST', body: JSON.stringify({ identifier: res.identifier, otp }) });
+            currentUser = final.user;
+            localStorage.setItem('velora_user', JSON.stringify(currentUser));
+            navigateTo('home');
         }
-    } catch (err) { }
+    }
 }
 
-function showOtpModal(identifier, fallback) {
-    const otp = prompt(`DEBUG: Enter OTP sent to ${identifier} (MOCK: ${fallback})`);
-    if (otp) verifyOtp(identifier, otp);
+function logout() {
+    currentUser = null;
+    localStorage.removeItem('velora_user');
+    navigateTo('home');
 }
 
-async function verifyOtp(identifier, otp) {
-    try {
-        const res = await fetchAPI('/auth/verify-otp', {
-            method: 'POST',
-            body: JSON.stringify({ identifier, otp })
-        });
-        currentUser = res.user;
-        localStorage.setItem('velora_user', JSON.stringify(currentUser));
-        localStorage.setItem('velora_token', res.token);
-        showToast(`Welcome, ${currentUser.name}!`, 'success');
-        navigateTo('home');
-    } catch (e) { }
-}
-
-// Initialize
 window.onload = () => {
     const saved = localStorage.getItem('velora_user');
-    if (saved) {
-        currentUser = JSON.parse(saved);
-        updateNavAuth();
-    }
+    if (saved) currentUser = JSON.parse(saved);
     navigateTo('home');
 };
