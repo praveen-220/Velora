@@ -39,7 +39,6 @@ def init_db():
 
 # ---------------- Helpers ----------------
 def send_otp(identifier, otp):
-    # Mocking for now, but configured for real if env vars exist
     print(f"[VELORA] OTP for {identifier}: {otp}")
     return True
 
@@ -98,11 +97,9 @@ def manage_rides():
         db.commit()
         return {"success": True}
     else:
-        # Search functionality
         from_loc = request.args.get("from", "").lower()
         to_loc = request.args.get("to", "").lower()
         date = request.args.get("date", "")
-        
         query = "SELECT r.*, u.name as driver_name, u.avatar as driver_avatar FROM rides r JOIN users u ON r.driver_id = u.id WHERE r.seats > 0"
         params = []
         if from_loc:
@@ -114,9 +111,15 @@ def manage_rides():
         if date:
             query += " AND r.ride_date = ?"
             params.append(date)
-            
         rides = db.execute(query, params).fetchall()
         return jsonify([dict(r) for r in rides])
+
+@app.route("/api/rides/<int:ride_id>")
+def get_ride(ride_id):
+    db = get_db()
+    ride = db.execute("SELECT r.*, u.name as driver_name, u.avatar as driver_avatar FROM rides r JOIN users u ON r.driver_id = u.id WHERE r.id=?", (ride_id,)).fetchone()
+    if ride: return jsonify(dict(ride))
+    return {"error": "Ride not found"}, 404
 
 @app.route("/api/rides/book", methods=["POST"])
 def book_ride():
@@ -125,7 +128,6 @@ def book_ride():
     ride = db.execute("SELECT seats FROM rides WHERE id=?", (data["ride_id"],)).fetchone()
     if not ride or ride["seats"] < data["seats_booked"]:
         return {"error": "Not enough seats available"}, 400
-    
     db.execute("INSERT INTO bookings (ride_id, user_id, seats_booked) VALUES (?,?,?)",
               (data["ride_id"], data["user_id"], data["seats_booked"]))
     db.execute("UPDATE rides SET seats = seats - ? WHERE id=?", (data["seats_booked"], data["ride_id"]))
