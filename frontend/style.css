@@ -114,8 +114,15 @@ h1, h2, h3, h4 {
     padding-top: 80px;
     display: flex;
     align-items: center;
-    background: var(--bg-light);
+    background: url('hero_bg.png') center/cover no-repeat;
     overflow: hidden;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%);
+    z-index: 1;
 }
 
 .hero-content {

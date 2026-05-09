@@ -169,21 +169,38 @@ async function initProfile() {
 // --- Views Content ---
 const views = {
     home: `
-        <div class="hero-wrapper" style="background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), url('https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80'); background-size:cover;">
-            <div class="hero-content" style="display:flex; flex-direction:column; align-items:center; text-align:center;">
-                <h1 class="animate-up">Your pick of rides at low prices</h1>
-                <p class="animate-up" style="margin-bottom:3rem;">Reliable carpooling for your daily travels or long trips.</p>
-                
-                <div class="booking-widget animate-up" style="max-width:900px; width:100%; display:grid; grid-template-columns: repeat(4, 1fr); gap:1rem; padding:1.5rem; border-radius:20px;">
-                    <div class="input-container" style="margin:0;"><input type="text" id="s-from" placeholder="Leaving from..."></div>
-                    <div class="input-container" style="margin:0;"><input type="text" id="s-to" placeholder="Going to..."></div>
-                    <div class="input-container" style="margin:0;"><input type="date" id="s-date"></div>
-                    <button class="btn-primary" onclick="navigateTo('search', {from:document.getElementById('s-from').value, to:document.getElementById('s-to').value, date:document.getElementById('s-date').value})">Search</button>
+        <div class="hero-wrapper">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="hero-text-block animate-up">
+                    <h1>Go anywhere.<br>With Velora.</h1>
+                    <p>Reliable carpooling for your daily travels or long trips. Premium experience, verified drivers.</p>
+                    
+                    <div class="booking-widget">
+                        <div class="widget-tabs">
+                            <button class="tab active">Find a Ride</button>
+                            <button class="tab" onclick="navigateTo('offer')">Offer a Ride</button>
+                        </div>
+                        <div class="input-container">
+                            <span class="material-symbols-outlined">radio_button_checked</span>
+                            <input type="text" id="s-from" placeholder="Leaving from...">
+                        </div>
+                        <div class="input-container">
+                            <span class="material-symbols-outlined">location_on</span>
+                            <input type="text" id="s-to" placeholder="Going to...">
+                        </div>
+                        <div class="input-container">
+                            <span class="material-symbols-outlined">calendar_today</span>
+                            <input type="date" id="s-date">
+                        </div>
+                        <button class="btn-primary" style="width:100%; margin-top:1rem;" onclick="navigateTo('search', {from:document.getElementById('s-from').value, to:document.getElementById('s-to').value, date:document.getElementById('s-date').value})">
+                            Search Rides
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     `,
-    search: `
         <div class="view-section" style="max-width:800px; margin:0 auto; padding-top:120px;">
             <h2 style="margin-bottom:2rem;">Search Results</h2>
             <div id="rides-list"></div>
