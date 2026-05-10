@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 node_modules/
 .DS_Store
 *.env
@@ -5,3 +6,30 @@ backend/dist/
 frontend/.next/
 mobile/VeloraMobile/android/build/
 mobile/VeloraMobile/ios/Pods/
+=======
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+
+# Build outputs
+*.class
+
+# Database
+*.db
+backend/velora.db
+
+# Environment variables
+.env
+env.txt
+backend/env.txt
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+>>>>>>> d4dae3e02ee3628f59b1a4f5bf3a09846ca47b54
