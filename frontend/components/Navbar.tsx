@@ -12,7 +12,7 @@ const Navbar = () => {
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <img src="/velora_gold_logo.png" alt="Velora" style={{ height: '32px' }} />
+              <img src="/velora_gold_logo.png" alt="Velora" style={{ height: '48px' }} />
             </div>
             <div className="nav-links" style={{ display: 'flex', gap: '20px', fontSize: '14px' }}>
               <a href="#">Ride</a>

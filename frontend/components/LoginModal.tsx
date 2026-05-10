@@ -64,7 +64,7 @@ const LoginModal = ({ isOpen, onClose }: LoginModalProps) => {
       <div style={{ backgroundColor: '#FFF', padding: '40px', borderRadius: '12px', width: '400px', position: 'relative' }}>
         <button onClick={onClose} style={{ position: 'absolute', top: '10px', right: '10px', border: 'none', background: 'none', fontSize: '20px', cursor: 'pointer' }}>×</button>
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <img src="/velora_gold_logo.png" alt="Velora" style={{ height: '40px' }} />
+          <img src="/velora_gold_logo.png" alt="Velora" style={{ height: '64px' }} />
           <h2 style={{ marginTop: '16px' }}>{step === 1 ? 'Log In or Sign Up' : 'Enter OTP'}</h2>
         </div>
 

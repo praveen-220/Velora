@@ -5,7 +5,7 @@ const Hero = () => {
     <section style={{ padding: 'var(--section-padding) 0' }}>
       <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', alignItems: 'center' }}>
         <div>
-          <img src="/velora_gold_logo.png" alt="Velora" style={{ height: '64px', marginBottom: '24px' }} />
+          <img src="/velora_gold_logo.png" alt="Velora" style={{ height: '96px', marginBottom: '24px' }} />
           <h1 style={{ marginBottom: '32px' }}>Request a ride for now or later</h1>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
             <input 
