@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velora | The Ultimate Mobility Network</title>
+    
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons & Maps -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="velora-nav">
+        <div class="nav-container">
+            <a href="#" class="brand-logo-container" onclick="navigateTo('home')">
+                <img src="logo.png" alt="Velora Logo" class="main-logo">
+            </a>
+            <div class="nav-links">
+                <a href="#" class="nav-link" onclick="navigateTo('dashboard')">Dashboard</a>
+                <a href="#" class="nav-link" onclick="navigateTo('home')">Explore</a>
+                <a href="#" class="nav-link" onclick="navigateTo('rider')">Rider Hub</a>
+                <a href="#" class="nav-link" onclick="navigateTo('driver')">Driver Portal</a>
+                <a href="#" class="nav-link" onclick="navigateTo('profile')">Profile</a>
+                <button class="btn-premium" id="nav-auth-btn" onclick="navigateTo('login')">Access Network</button>
+            </div>
+        </div>
+    </nav>
+
+    <main id="app-container">
+        <!-- Uber-Like SPA -->
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
